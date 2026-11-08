@@ -1,0 +1,21 @@
+{
+  "name": "backend-lab3",
+  "version": "1.0.0",
+  "description": "Lab 3: REST API, query parameters, validation, and debugging with Express.js and SQLite",
+  "main": "app.js",
+  "scripts": {
+    "kill:port": "powershell -Command \"Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }\"",
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "test": "node test_runner.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
+  }
+}

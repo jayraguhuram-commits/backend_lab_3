@@ -1,0 +1,474 @@
+{
+  "info": {
+    "name": "Lab 3 - Books API Collection",
+    "_postman_id": "lab3-books-api-collection-v2",
+    "description": "Complete Postman test suite covering success and failure cases for Express & SQLite Books REST API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "POST /books - Success (201)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 201 Created', () => pm.response.to.have.status(201));",
+              "pm.test('Returns created book ID and success message', () => {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json).to.have.property('id');",
+              "    pm.expect(json.message).to.eql('Book created successfully');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Clean Code\",\n  \"author\": \"Robert C. Martin\",\n  \"price\": 29.99\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/books",
+          "host": ["{{base_url}}"],
+          "path": ["books"]
+        }
+      }
+    },
+    {
+      "name": "POST /books - Failure: Missing Title (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400 Bad Request', () => pm.response.to.have.status(400));",
+              "pm.test('Returns descriptive error message', () => {",
+              "    pm.expect(pm.response.json().message).to.include('Title');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"author\": \"Robert C. Martin\",\n  \"price\": 29.99\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/books",
+          "host": ["{{base_url}}"],
+          "path": ["books"]
+        }
+      }
+    },
+    {
+      "name": "POST /books - Failure: Empty Author (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400 Bad Request', () => pm.response.to.have.status(400));",
+              "pm.test('Returns descriptive error message', () => {",
+              "    pm.expect(pm.response.json().message).to.include('Author');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Clean Code\",\n  \"author\": \"   \",\n  \"price\": 29.99\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/books",
+          "host": ["{{base_url}}"],
+          "path": ["books"]
+        }
+      }
+    },
+    {
+      "name": "POST /books - Failure: Negative Price (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400 Bad Request', () => pm.response.to.have.status(400));",
+              "pm.test('Returns descriptive error message', () => {",
+              "    pm.expect(pm.response.json().message).to.include('Price');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Clean Code\",\n  \"author\": \"Robert C. Martin\",\n  \"price\": -10.00\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/books",
+          "host": ["{{base_url}}"],
+          "path": ["books"]
+        }
+      }
+    },
+    {
+      "name": "GET /books - Default Pagination & Sort (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('Response is an array', () => {",
+              "    pm.expect(pm.response.json()).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/books",
+          "host": ["{{base_url}}"],
+          "path": ["books"]
+        }
+      }
+    },
+    {
+      "name": "GET /books - Search, Price Filter, and Order (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('Response is an array', () => {",
+              "    pm.expect(pm.response.json()).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/books?search_q=Clean&min_price=10&max_price=50&order_by=price&order=DESC&limit=5&offset=0",
+          "host": ["{{base_url}}"],
+          "path": ["books"],
+          "query": [
+            { "key": "search_q", "value": "Clean" },
+            { "key": "min_price", "value": "10" },
+            { "key": "max_price", "value": "50" },
+            { "key": "order_by", "value": "price" },
+            { "key": "order", "value": "DESC" },
+            { "key": "limit", "value": "5" },
+            { "key": "offset", "value": "0" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /books - Failure: Negative Limit & Offset (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400 Bad Request', () => pm.response.to.have.status(400));",
+              "pm.test('Descriptive pagination error message', () => {",
+              "    pm.expect(pm.response.json().message).to.include('limit');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/books?limit=-5",
+          "host": ["{{base_url}}"],
+          "path": ["books"],
+          "query": [
+            { "key": "limit", "value": "-5" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /books - Failure: Inverted Price Range (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400 Bad Request', () => pm.response.to.have.status(400));",
+              "pm.test('Descriptive price range error message', () => {",
+              "    pm.expect(pm.response.json().message).to.eql('min_price cannot be greater than max_price');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/books?min_price=100&max_price=20",
+          "host": ["{{base_url}}"],
+          "path": ["books"],
+          "query": [
+            { "key": "min_price", "value": "100" },
+            { "key": "max_price", "value": "20" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /books - Failure: Invalid order_by / SQLi Protection (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400 Bad Request', () => pm.response.to.have.status(400));",
+              "pm.test('Whitelist error message', () => {",
+              "    pm.expect(pm.response.json().message).to.include('order_by');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/books?order_by=DROP_TABLE",
+          "host": ["{{base_url}}"],
+          "path": ["books"],
+          "query": [
+            { "key": "order_by", "value": "DROP_TABLE" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /books/:id - Existing ID (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('Returns book record', () => {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json).to.have.property('id');",
+              "    pm.expect(json).to.have.property('title');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/books/1",
+          "host": ["{{base_url}}"],
+          "path": ["books", "1"]
+        }
+      }
+    },
+    {
+      "name": "GET /books/:id - Non-existent ID (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 404 Not Found', () => pm.response.to.have.status(404));",
+              "pm.test('Uniform 404 message', () => {",
+              "    pm.expect(pm.response.json().message).to.eql('Book not found');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/books/99999",
+          "host": ["{{base_url}}"],
+          "path": ["books", "99999"]
+        }
+      }
+    },
+    {
+      "name": "PUT /books/:id - Update Existing (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('Update success message', () => {",
+              "    pm.expect(pm.response.json().message).to.eql('Book updated successfully');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Clean Architecture\",\n  \"author\": \"Robert C. Martin\",\n  \"price\": 34.99\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/books/1",
+          "host": ["{{base_url}}"],
+          "path": ["books", "1"]
+        }
+      }
+    },
+    {
+      "name": "PUT /books/:id - Failure: Non-existent ID (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 404 Not Found', () => pm.response.to.have.status(404));",
+              "pm.test('Uniform not found message', () => {",
+              "    pm.expect(pm.response.json().message).to.eql('Book not found');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Non Existent Book\",\n  \"author\": \"Ghost Writer\",\n  \"price\": 19.99\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/books/99999",
+          "host": ["{{base_url}}"],
+          "path": ["books", "99999"]
+        }
+      }
+    },
+    {
+      "name": "PUT /books/:id - Failure: Invalid Body (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400 Bad Request', () => pm.response.to.have.status(400));",
+              "pm.test('Body validation error message', () => {",
+              "    pm.expect(pm.response.json().message).to.include('Author');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Updated Title\",\n  \"author\": \"\",\n  \"price\": 25.00\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/books/1",
+          "host": ["{{base_url}}"],
+          "path": ["books", "1"]
+        }
+      }
+    },
+    {
+      "name": "DELETE /books/:id - Delete Existing (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('Delete success message', () => {",
+              "    pm.expect(pm.response.json().message).to.eql('Book deleted successfully');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{base_url}}/books/1",
+          "host": ["{{base_url}}"],
+          "path": ["books", "1"]
+        }
+      }
+    },
+    {
+      "name": "DELETE /books/:id - Failure: Non-existent ID (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 404 Not Found', () => pm.response.to.have.status(404));",
+              "pm.test('Delete not found message', () => {",
+              "    pm.expect(pm.response.json().message).to.eql('Book not found');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{base_url}}/books/99999",
+          "host": ["{{base_url}}"],
+          "path": ["books", "99999"]
+        }
+      }
+    }
+  ]
+}
+
